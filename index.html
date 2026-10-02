@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <title>Carte de Vizita Interactiva AR.js</title>
+    
+    <!-- Librariile Core: A-Frame si AR.js pentru A-Frame -->
+    <script src="https://aframe.io"></script>
+    <script src="https://githack.com"></script>
+    
+    <!-- Script suplimentar pentru suportul animatiilor 3D (glTF) -->
+    <script src="https://jsdelivr.net"></script>
+
+    <style>
+        /* Interfata 2D UI suprapusa (Overlay) pentru interactiune/link-uri */
+        #ar-ui-overlay {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 9999;
+            display: none; /* Se activeaza doar cand markerul este detectat */
+            flex-direction: row;
+            gap: 15px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 12px 25px;
+            border-radius: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(5px);
+        }
+        .ar-btn {
+            color: white;
+            text-decoration: none;
+            font-family: Arial, sans-serif;
+            font-weight: bold;
+            font-size: 14px;
+            padding: 8px 16px;
+            background: #007bff;
+            border-radius: 20px;
+            transition: background 0.3s ease;
+        }
+        .ar-btn:hover {
+            background: #0056b3;
+        }
+        .ar-btn.portfolio {
+            background: #28a745;
+        }
+        .ar-btn.portfolio:hover {
+            background: #218838;
+        }
+        /* Ecran de incarcare / Instructiuni */
+        #loading-screen {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #111;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            font-family: sans-serif;
+        }
+    </style>
+</head>
+<body style="margin: 0; overflow: hidden;">
+
+    <!-- Ecran de pornire -->
+    <div id="loading-screen">
+        <h2>Se incarca experienta AR...</h2>
+        <p>Permite accesul la camera cand ti se cere.</p>
+        <button onclick="startAR()" style="padding: 10px 20px; font-size: 16px; cursor: pointer; margin-top: 15px;">Porneste Camera</button>
+    </div>
+
+    <!-- UI-ul 2D Interactiv -->
+    <div id="ar-ui-overlay">
+        <a href="https://linkedin.com" target="_blank" class="ar-btn">LinkedIn</a>
+        <a href="https://github.com" target="_blank" class="ar-btn portfolio">Portofoliu</a>
+    </div>
+
+    <!-- Scena AR.js -->
+    <!-- embedded dezactiveaza stilul fullscreen nativ al A-Frame pentru a folosi layout-ul AR.js -->
+    <a-scene 
+        embedded 
+        arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono_matrix; matrixCodeType: 3x3;"
+        renderer="logarithmicDepthBuffer: true; colorManagement: true;">
+        
+        <!-- Managementul Resurselor (Assets) -->
+        <a-assets>
+            <!-- Avatar 3D Animat (glTF format recomandat). Inlocuieste src cu link-ul tau catre model -->
+            <!-- Folosim un model dummy animat de test (un robotel) din repozitorul oficial khronos -->
+            <a-asset-item id="avatar3d" src="https://githubusercontent.com"></a-asset-item>
+        </a-assets>
+
+        <!-- Definirea Markerului (Aici se intampla Spatial Anchoring) -->
+        <!-- Pentru marker personalizat schimba type="pattern" url="cale/catre/marker.patt" -->
+        <a-marker preset="hiro" id="ar-marker">
+            
+            <!-- 1. Avatarul 3D Animat -->
+            <!-- Componenta animation-mixer din aframe-extras activeaza automat animatiile stocate in glTF -->
+            
+            
+
+            <!-- 2. Elemente Text Flotante (Spatial Anchored Text) -->
+            <!-- Numele tau / Pozitia -->
+            <a-text 
+                value="Numele Tau\nFull-Stack Developer" 
+                position="0 1.2 0" 
+                align="center" 
+                color="#FFFFFF" 
+                width="3" 
+                font="mozillavr"
+                animation="property: position; to: 0 1.3 0; dir: alternate; loop: true; dur: 2000; easing: easeInOutQuad">
+                <!-- Fundal in spatele textului pentru lizibilitate crescuta -->
+                <a-plane color="#000" height="0.5" width="2" opacity="0.6" position="0 0 -0.01"></a-plane>
+            </a-text>
+
+            <!-- Text secundar cu detalii contact / status -->
+            <a-text
+                value="Scaneaza butoanele de mai jos"
+                position="0 0.8 0.5"
+                rotation="-30 0 0"
+                align="center"
+                color="#00FFCC"
+                width="2">
+            </a-text>
+
+        </a-marker>
+
+        <!-- Camera virtuala a scenei 3D aranjata sa urmareasca markerul fizic -->
+        
+    </a-scene>
+
+    <!-- Scriptul de Logica pentru Detectia Markerului si Afisarea UI-ului 2D -->
+    <script>
+        const marker = document.getElementById('ar-marker');
+        const uiOverlay = document.getElementById('ar-ui-overlay');
+        const loadingScreen = document.getElementById('loading-screen');
+
+        function startAR() {
+            loadingScreen.style.display = 'none';
+        }
+
+        // Eveniment declansat cand algoritmul Pose Estimation gaseste markerul in fluxul WebRTC
+        marker.addEventListener('markerFound', () => {
+            console.log("Marker Gasit! Activare Spatial Anchoring.");
+            uiOverlay.style.display = 'flex'; // Afiseaza butoanele interactive 2D
+        });
+
+        // Eveniment declansat in caz de ocluzie (acoperire marker) sau lumina slaba
+        marker.addEventListener('markerLost', () => {
+            console.log("Marker Pierdut! Obiectele virtuale sunt ascunse.");
+            uiOverlay.style.display = 'none'; // Ascunde butoanele 2D pana la re-detectie
+        });
+    </script>
+</body>
+</html>
