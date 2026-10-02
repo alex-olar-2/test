@@ -2,701 +2,182 @@
 <html lang="ro">
 <head>
     <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width,
-                 initial-scale=1.0,
-                 maximum-scale=1.0,
-                 user-scalable=no,
-                 viewport-fit=cover"
-    >
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>WebAR Carte de Vizită</title>
 
-    <!-- =========================================================
-         A-FRAME
-         ========================================================= -->
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
-
-    <!-- =========================================================
-         AR.JS
-         ========================================================= -->
-    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.5/aframe/build/aframe-ar.js"></script>
 
     <style>
-        * {
-            box-sizing: border-box;
+        * { box-sizing: border-box; }
+        html, body {
+            width: 100%; height: 100%; margin: 0; padding: 0;
+            overflow: hidden; background: #000; font-family: Arial, sans-serif;
         }
-
-        html,
-        body {
-            width: 100%;
-            height: 100%;
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-            background: #000;
-            font-family: Arial, sans-serif;
-        }
-
-        /* =====================================================
-           ECRAN START
-           ===================================================== */
 
         #welcome {
-            position: fixed;
-            inset: 0;
-            z-index: 100000;
-
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-
-            padding: 25px;
-
-            background:
-                radial-gradient(
-                    circle at center,
-                    #202020 0%,
-                    #080808 70%
-                );
-
-            color: white;
-            text-align: center;
+            position: fixed; inset: 0; z-index: 100000;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            padding: 25px; color: white; text-align: center;
+            background: radial-gradient(circle at center, #202020 0%, #080808 70%);
         }
-
-        #welcome h1 {
-            margin: 0 0 15px;
-            font-size: 25px;
-        }
-
-        #welcome p {
-            max-width: 320px;
-            margin: 0;
-
-            color: #aaa;
-            line-height: 1.5;
-            font-size: 15px;
-        }
-
+        #welcome h1 { margin: 0 0 15px; font-size: 25px; }
+        #welcome p { max-width: 320px; margin: 0; color: #aaa; line-height: 1.5; font-size: 15px; }
         #startButton {
-            margin-top: 30px;
-
-            padding: 16px 35px;
-
-            border: 0;
-            border-radius: 50px;
-
-            background: #19c463;
-            color: white;
-
-            font-size: 17px;
-            font-weight: bold;
-
-            box-shadow:
-                0 5px 25px rgba(25, 196, 99, 0.4);
-
-            -webkit-tap-highlight-color: transparent;
+            margin-top: 30px; padding: 16px 35px; border: 0; border-radius: 50px;
+            background: #19c463; color: white; font-size: 17px; font-weight: bold;
+            box-shadow: 0 5px 25px rgba(25,196,99,.4);
         }
-
-        #startButton:active {
-            transform: scale(0.96);
-        }
-
-        /* =====================================================
-           LOADING
-           ===================================================== */
 
         #loading {
-            display: none;
-
-            position: fixed;
-            inset: 0;
-
-            z-index: 99999;
-
-            align-items: center;
-            justify-content: center;
-
-            background: #000;
-
-            color: white;
-            text-align: center;
+            display: none; position: fixed; inset: 0; z-index: 99999;
+            align-items: center; justify-content: center;
+            background: #000; color: white; text-align: center;
         }
-
-        /* =====================================================
-           UI AR
-           ===================================================== */
 
         #arUI {
-            display: none;
-
-            position: fixed;
-
-            left: 50%;
-            bottom: 25px;
-
-            transform: translateX(-50%);
-
-            z-index: 9999;
-
-            width: calc(100% - 30px);
-            max-width: 420px;
-
-            padding: 12px;
-
-            border-radius: 25px;
-
-            background: rgba(0, 0, 0, 0.82);
-
-            backdrop-filter: blur(10px);
-
-            gap: 10px;
-
+            display: none; position: fixed; left: 50%; bottom: 25px;
+            transform: translateX(-50%); z-index: 9999;
+            width: calc(100% - 30px); max-width: 420px; padding: 12px;
+            border-radius: 25px; background: rgba(0,0,0,.82); gap: 10px;
             justify-content: center;
         }
-
         .arButton {
-            flex: 1;
-
-            display: block;
-
-            padding: 13px 10px;
-
-            border-radius: 20px;
-
-            color: white;
-            text-decoration: none;
-
-            text-align: center;
-
-            font-size: 14px;
-            font-weight: bold;
-
-            background: #0077b5;
+            flex: 1; display: block; padding: 13px 10px; border-radius: 20px;
+            color: white; text-decoration: none; text-align: center;
+            font-size: 14px; font-weight: bold; background: #0077b5;
         }
-
-        .arButton.portfolio {
-            background: #24292e;
-        }
-
-        /* =====================================================
-           INSTRUCȚIUNI
-           ===================================================== */
+        .arButton.portfolio { background: #24292e; }
 
         #instruction {
-            display: none;
-
-            position: fixed;
-
-            top: 25px;
-            left: 50%;
-
-            transform: translateX(-50%);
-
-            z-index: 9998;
-
-            width: calc(100% - 40px);
-            max-width: 350px;
-
-            padding: 12px 18px;
-
-            border-radius: 20px;
-
-            background: rgba(0,0,0,.7);
-
-            color: white;
-
-            text-align: center;
-
-            font-size: 14px;
+            display: none; position: fixed; top: 25px; left: 50%;
+            transform: translateX(-50%); z-index: 9998;
+            width: calc(100% - 40px); max-width: 350px; padding: 12px 18px;
+            border-radius: 20px; background: rgba(0,0,0,.7);
+            color: white; text-align: center; font-size: 14px;
         }
 
-        /* A-Frame poate crea canvas full screen */
-        a-scene {
-            position: fixed !important;
-            inset: 0 !important;
-
-            width: 100% !important;
-            height: 100% !important;
-        }
-
-        canvas.a-canvas {
-            width: 100% !important;
-            height: 100% !important;
-        }
-
-        /* Ascundem VR button */
-        .a-enter-vr {
-            display: none !important;
-        }
+        a-scene { position: fixed !important; inset: 0 !important; }
+        .a-enter-vr { display: none !important; }
     </style>
 </head>
-
 <body>
 
-    <!-- =========================================================
-         START SCREEN
-         ========================================================= -->
-
     <div id="welcome">
-
         <h1>📱 WebAR</h1>
-
-        <p>
-            Pentru a începe experiența AR trebuie să permiți
-            accesul la cameră.
-        </p>
-
-        <button id="startButton">
-            PORNEȘTE AR
-        </button>
-
+        <p>Pentru a începe experiența AR trebuie să permiți accesul la cameră.</p>
+        <button id="startButton">PORNEȘTE AR</button>
     </div>
-
-
-    <!-- =========================================================
-         LOADING
-         ========================================================= -->
 
     <div id="loading">
         <div>
             <div style="font-size:35px;">📷</div>
-
-            <p>
-                Se pornește camera...
-            </p>
+            <p>Se pornește camera...</p>
         </div>
     </div>
 
-
-    <!-- =========================================================
-         INSTRUCȚIUNE
-         ========================================================= -->
-
-    <div id="instruction">
-        Îndreaptă camera către markerul <b>HIRO</b>
-    </div>
-
-
-    <!-- =========================================================
-         BUTOANE
-         ========================================================= -->
+    <div id="instruction">Îndreaptă camera către markerul <b>HIRO</b></div>
 
     <div id="arUI">
-
-        <a
-            class="arButton"
-            href="https://www.linkedin.com/"
-            target="_blank"
-            rel="noopener"
-        >
-            LinkedIn
-        </a>
-
-        <a
-            class="arButton portfolio"
-            href="https://github.com/"
-            target="_blank"
-            rel="noopener"
-        >
-            Portofoliu
-        </a>
-
+        <a class="arButton" href="https://www.linkedin.com/" target="_blank" rel="noopener">LinkedIn</a>
+        <a class="arButton portfolio" href="https://github.com/" target="_blank" rel="noopener">Portofoliu</a>
     </div>
 
-
-    <!-- =========================================================
-         SCENA AR
-         ========================================================= -->
-
-    <a-scene
-        id="scene"
-
-        embedded
-
-        vr-mode-ui="enabled: false"
-
-        renderer="
-            antialias: true;
-            alpha: true;
-            colorManagement: true;
-        "
-
-        arjs="
-            sourceType: webcam;
-            detectionMode: mono;
-            matrixCodeType: 3x3;
-            debugUIEnabled: false;
-        "
-    >
-
-
-        <!-- =====================================================
-             MARKER HIRO
-             ===================================================== -->
-
-        <a-marker
-            id="hiroMarker"
-            preset="hiro"
-        >
-
-            <!-- =================================================
-                 CUB 3D
-                 ================================================= -->
-
-            <a-box
-                position="0 0.5 0"
-                rotation="0 45 0"
-
-                color="#00ffcc"
-
-                material="
-                    opacity: 0.95;
-                    metalness: 0.2;
-                    roughness: 0.3;
-                "
-
-                animation="
-                    property: rotation;
-                    to: 360 405 360;
-                    loop: true;
-                    dur: 5000;
-                    easing: linear;
-                "
-            >
-            </a-box>
-
-
-            <!-- =================================================
-                 TEXT
-                 ================================================= -->
-
-            <a-text
-                value="Salut! Sunt un catel 3D AR"
-                position="0 1.5 0"
-
-                align="center"
-
-                color="#00FFCC"
-
-                width="4"
-
-                side="double"
-            >
-            </a-text>
-
-
-            <!-- =================================================
-                 PLANȘĂ SUB OBIECT
-                 ================================================= -->
-
-            <a-plane
-                position="0 0 0"
-                rotation="-90 0 0"
-
-                width="2"
-                height="2"
-
-                color="#111111"
-
-                opacity="0.6"
-            >
-            </a-plane>
-
-        </a-marker>
-
-
-        <!-- =====================================================
-             CAMERA
-             ===================================================== -->
-
-        <a-entity camera></a-entity>
-
-    </a-scene>
-
+    <!-- Scena AR se creează DOAR după click -->
+    <div id="sceneContainer"></div>
 
     <script>
-
-        /*
-         * ========================================================
-         * ELEMENTE
-         * ========================================================
-         */
-
         const welcome = document.getElementById("welcome");
         const startButton = document.getElementById("startButton");
-
         const loading = document.getElementById("loading");
-
-        const scene = document.getElementById("scene");
-
-        const marker = document.getElementById("hiroMarker");
-
         const arUI = document.getElementById("arUI");
+        const instruction = document.getElementById("instruction");
+        const container = document.getElementById("sceneContainer");
 
-        const instruction =
-            document.getElementById("instruction");
+        let started = false;
 
+        function showReady() {
+            loading.style.display = "none";
+            instruction.style.display = "block";
+        }
 
-        /*
-         * ========================================================
-         * START AR
-         * ========================================================
-         */
+        function showError(msg) {
+            loading.style.display = "none";
+            welcome.style.display = "flex";
+            container.innerHTML = "";
+            started = false;
+            alert(msg);
+        }
 
-        startButton.addEventListener("click", async function () {
-
-            console.log("Pornire AR...");
+        startButton.addEventListener("click", function () {
+            if (started) return;
+            started = true;
 
             welcome.style.display = "none";
-
             loading.style.display = "flex";
 
-            /*
-             * Cerem explicit acces la cameră.
-             *
-             * Este important pe Android/iOS deoarece
-             * getUserMedia trebuie pornit dintr-o interacțiune
-             * a utilizatorului.
-             */
+            // Scena este creată acum -> AR.js cere camera acum (din gest utilizator)
+            container.innerHTML = `
+                <a-scene
+                    embedded
+                    vr-mode-ui="enabled: false"
+                    renderer="antialias: true; alpha: true"
+                    arjs="sourceType: webcam; debugUIEnabled: false;">
 
-            try {
+                    <a-marker id="hiroMarker" preset="hiro">
+                        <a-box position="0 0.5 0" rotation="0 45 0" color="#00ffcc"
+                               animation="property: rotation; to: 360 405 360; loop: true; dur: 5000; easing: linear">
+                        </a-box>
 
-                const stream =
-                    await navigator.mediaDevices.getUserMedia({
-                        video: {
-                            facingMode: {
-                                ideal: "environment"
-                            },
+                        <a-text value="Salut! Sunt un cub 3D AR" position="0 1.5 0"
+                                align="center" color="#00FFCC" width="4" side="double">
+                        </a-text>
 
-                            width: {
-                                ideal: 1280
-                            },
+                        <a-plane position="0 0 0" rotation="-90 0 0" width="2" height="2"
+                                 color="#111111" opacity="0.6">
+                        </a-plane>
+                    </a-marker>
 
-                            height: {
-                                ideal: 720
-                            }
-                        },
+                    <a-entity camera></a-entity>
+                </a-scene>
+            `;
 
-                        audio: false
-                    });
+            const scene = container.querySelector("a-scene");
+            const marker = container.querySelector("#hiroMarker");
 
-                console.log("Camera permisă.");
+            scene.addEventListener("camera-init", showReady);
 
-                /*
-                 * Oprim stream-ul temporar.
-                 *
-                 * AR.js își va crea propriul stream.
-                 */
+            scene.addEventListener("camera-error", function () {
+                showError("Nu s-a putut accesa camera. Verifică permisiunea și că pagina e deschisă prin HTTPS.");
+            });
 
-                stream.getTracks().forEach(function(track) {
-                    track.stop();
-                });
-
-
-                /*
-                 * Pornim scena.
-                 */
-
-                scene.style.visibility = "visible";
-
-
-                /*
-                 * Mic delay pentru iOS / Android
-                 */
-
-                setTimeout(function () {
-
-                    window.dispatchEvent(
-                        new Event("resize")
-                    );
-
-                }, 500);
-
-
-            } catch (error) {
-
-                console.error(
-                    "Camera error:",
-                    error
-                );
-
-                loading.style.display = "none";
-
-                welcome.style.display = "flex";
-
-                alert(
-                    "Nu s-a putut accesa camera.\n\n" +
-                    "Verifică permisiunea pentru cameră " +
-                    "și asigură-te că pagina este deschisă prin HTTPS."
-                );
-
-            }
-
-        });
-
-
-        /*
-         * ========================================================
-         * SCENA A-FRAME GATA
-         * ========================================================
-         */
-
-        scene.addEventListener(
-            "loaded",
-            function () {
-
-                console.log(
-                    "A-Frame loaded."
-                );
-
-            }
-        );
-
-
-        /*
-         * ========================================================
-         * CAMERA AR PORNITĂ
-         * ========================================================
-         */
-
-        scene.addEventListener(
-            "camera-init",
-            function (event) {
-
-                console.log(
-                    "AR camera initialized.",
-                    event
-                );
-
-                loading.style.display = "none";
-
-                instruction.style.display = "block";
-
-            }
-        );
-
-
-        /*
-         * ========================================================
-         * EROARE CAMERA
-         * ========================================================
-         */
-
-        scene.addEventListener(
-            "camera-error",
-            function (event) {
-
-                console.error(
-                    "AR camera error:",
-                    event
-                );
-
-                loading.style.display = "none";
-
-                welcome.style.display = "flex";
-
-            }
-        );
-
-
-        /*
-         * ========================================================
-         * MARKER DETECTAT
-         * ========================================================
-         */
-
-        marker.addEventListener(
-            "markerFound",
-            function () {
-
-                console.log(
-                    "HIRO marker FOUND"
-                );
-
+            marker.addEventListener("markerFound", function () {
                 arUI.style.display = "flex";
-
                 instruction.style.display = "none";
+            });
 
-            }
-        );
-
-
-        /*
-         * ========================================================
-         * MARKER PIERDUT
-         * ========================================================
-         */
-
-        marker.addEventListener(
-            "markerLost",
-            function () {
-
-                console.log(
-                    "HIRO marker LOST"
-                );
-
+            marker.addEventListener("markerLost", function () {
                 arUI.style.display = "none";
-
                 instruction.style.display = "block";
+            });
 
-            }
-        );
-
-
-        /*
-         * ========================================================
-         * ORIENTATION CHANGE
-         * ========================================================
-         */
-
-        window.addEventListener(
-            "orientationchange",
-            function () {
-
-                setTimeout(function () {
-
-                    window.dispatchEvent(
-                        new Event("resize")
-                    );
-
-                }, 500);
-
-            }
-        );
-
-
-        /*
-         * ========================================================
-         * RESIZE
-         * ========================================================
-         */
-
-        window.addEventListener(
-            "resize",
-            function () {
-
-                setTimeout(function () {
-
-                    if (scene) {
-
-                        scene.style.width =
-                            window.innerWidth + "px";
-
-                        scene.style.height =
-                            window.innerHeight + "px";
-
+            // Fallback: dacă evenimentul camera-init nu vine, verificăm video-ul
+            let tries = 0;
+            const check = setInterval(function () {
+                tries++;
+                const video = document.querySelector("video");
+                if (video && video.readyState >= 2) {
+                    clearInterval(check);
+                    if (loading.style.display !== "none") showReady();
+                } else if (tries > 40) { // ~20 secunde
+                    clearInterval(check);
+                    if (loading.style.display !== "none") {
+                        showError("Camera nu a pornit. Încearcă din nou sau deschide pagina în Chrome/Safari.");
                     }
-
-                }, 100);
-
-            }
-        );
-
+                }
+            }, 500);
+        });
     </script>
-
 </body>
 </html>
