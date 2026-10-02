@@ -3,190 +3,141 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-    <title>Carte de Vizita Interactiva AR.js</title>
+    <title>Aplicație WebAR Stabilă</title>
     
-    <!-- Librariile Core: A-Frame si AR.js pentru A-Frame -->
-    <script src="https://aframe.io"></script>
-    <script src="https://githack.com"></script>
-    
-    <!-- Suport pentru animatiile 3D (glTF) -->
+    <!-- VERSIONS ULTRA-STABILE PENTRU MOBIL (iOS & Android) -->
+    <script src="https://cloudflare.com"></script>
+    <script src="https://unpkg.com"></script>
     <script src="https://jsdelivr.net"></script>
 
     <style>
-        /* Ecran de incarcare / Permisiune cu buton mare */
-        #loading-screen {
+        /* Ecran de start simplu pentru interactiune fizica */
+        #ar-welcome-screen {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: #111111;
+            background: #111;
             color: white;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            z-index: 10000;
-            font-family: Arial, sans-serif;
+            z-index: 99999;
+            font-family: sans-serif;
             text-align: center;
             padding: 20px;
             box-sizing: border-box;
         }
-
-        #start-btn {
-            padding: 16px 32px;
+        #start-ar-button {
+            padding: 15px 35px;
             font-size: 18px;
             font-weight: bold;
             color: white;
-            background: #007bff;
+            background: #28a745;
             border: none;
-            border-radius: 30px;
+            border-radius: 50px;
             cursor: pointer;
-            box-shadow: 0 4px 15px rgba(0, 123, 255, 0.4);
-            transition: transform 0.2s, background 0.2s;
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.4);
             margin-top: 20px;
         }
-
-        #start-btn:active {
-            transform: scale(0.95);
-            background: #0056b3;
-        }
-
-        /* Interfata 2D UI pentru link-uri sociale */
+        /* Meniu butoane sociale */
         #ar-ui-overlay {
             position: fixed;
             bottom: 30px;
             left: 50%;
             transform: translateX(-50%);
             z-index: 9999;
-            display: none; /* Se activeaza doar cand markerul este detectat */
+            display: none;
             flex-direction: row;
             gap: 15px;
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.85);
             padding: 12px 25px;
             border-radius: 30px;
             border: 1px solid rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(5px);
         }
-
         .ar-btn {
             color: white;
             text-decoration: none;
-            font-family: Arial, sans-serif;
+            font-family: sans-serif;
             font-weight: bold;
             font-size: 14px;
             padding: 10px 20px;
             background: #007bff;
             border-radius: 20px;
         }
-
-        .ar-btn.portfolio {
-            background: #28a745;
-        }
     </style>
 </head>
 <body style="margin: 0; overflow: hidden;">
 
-    <!-- Ecranul de start obligatoriu pentru permisiune -->
-    <div id="loading-screen">
-        <h2 style="margin-bottom: 10px;">Experienta WebAR interactiva</h2>
-        <p style="color: #aaa; max-width: 300px; font-size: 14px; line-height: 1.5;">
-            Pentru a vizualiza cartea de vizită 3D este necesar accesul la camera foto a dispozitivului.
-        </p>
-        <button id="start-btn" onclick="solicitaPermisiuneCamera()">Porneste Camera AR</button>
+    <!-- Ecranul de pornire care deblocheaza audio/video pe mobil -->
+    <div id="ar-welcome-screen">
+        <h2>Aplicație WebAR Carte de Vizită</h2>
+        <p style="color: #aaa; font-size: 14px; max-width: 280px;">Apasă butonul de mai jos pentru a activa camera și experiența 3D.</p>
+        <button id="start-ar-button">PORNEȘTE AR</button>
     </div>
 
-    <!-- UI-ul 2D Interactiv (Butoane Social Media) -->
+    <!-- UI pentru linkuri (apare doar cand markerul e detectat) -->
     <div id="ar-ui-overlay">
         <a href="https://linkedin.com" target="_blank" class="ar-btn">LinkedIn</a>
-        <a href="https://github.com" target="_blank" class="ar-btn portfolio">Portofoliu</a>
+        <a href="https://github.com" target="_blank" class="ar-btn" style="background:#28a745;">Portofoliu</a>
     </div>
 
-    <!-- Scena AR.js optimizata pentru compatibilitate transversala (iOS/Android) -->
+    <!-- Scena AR realiniata cu bunele practici AR.js 3.x -->
     <a-scene 
         embedded 
-        arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono_matrix; sourceWidth:1280; sourceHeight:720; displayWidth:1280; displayHeight:720;"
-        renderer="logarithmicDepthBuffer: true; colorManagement: true;">
+        arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono_matrix; cameraParametersUrl: https://githubusercontent.com;"
+        renderer="colorManagement: true; antialias: true;">
         
         <a-assets>
-            <!-- Modelul 3D de test animat (Robotel) -->
-            <a-asset-item id="avatar3d" src="https://githubusercontent.com"></a-asset-item>
+            <!-- Model 3D stabil (Cutie texturata de test livrata direct de A-Frame ca sa eliminam riscul de descarcare lenta a robotului) -->
+            <a-asset-item id="testBox" src="https://githubusercontent.com"></a-asset-item>
         </a-assets>
 
-        <!-- Ancorarea Spatiala pe Markerul HIRO -->
+        <!-- Ancorare pe markerul standard HIRO -->
         <a-marker preset="hiro" id="ar-marker">
             
-            <!-- 1. Avatarul 3D Animat -->
+            <!-- Modelul unui catelus Shiba (Inlocuieste robotul precedent care putea genera erori de incarcare pe retele mobile) -->
             
             
 
-            <!-- 2. Text Flotant Animat -->
+            <!-- Text Plutitor -->
             <a-text 
-                value="Numele Tau\nFull-Stack Developer" 
-                position="0 1.2 0" 
+                value="Salut! Sunt un catel 3D AR" 
+                position="0 1.5 0" 
                 align="center" 
-                color="#FFFFFF" 
-                width="3" 
-                font="mozillavr"
-                animation="property: position; to: 0 1.3 0; dir: alternate; loop: true; dur: 2000; easing: easeInOutQuad">
-                <a-plane color="#000000" height="0.5" width="2" opacity="0.6" position="0 0 -0.01"></a-plane>
+                color="#00FFCC" 
+                width="4"
+                font="mozillavr">
             </a-text>
 
         </a-marker>
 
+        <!-- Camera obligatorie pentru randare -->
         
     </a-scene>
 
-    <!-- Scriptul de logica pentru interactiune si permisiuni -->
     <script>
-        // Alerta globala pentru debug in caz ca apare vreo eroare pe mobil
-        window.addEventListener('error', function(e) {
-            alert("Eroare script: " + e.message + " la linia " + e.lineno);
-        });
-
+        const welcomeScreen = document.getElementById('ar-welcome-screen');
+        const startButton = document.getElementById('start-ar-button');
         const marker = document.getElementById('ar-marker');
         const uiOverlay = document.getElementById('ar-ui-overlay');
-        const loadingScreen = document.getElementById('loading-screen');
 
-        function solicitaPermisiuneCamera() {
-            // Verificam daca browserul suporta API-ul de camera media
-            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-                
-                // Fortam solicitarea permisiunii printr-un stream video standard nativ
-                navigator.mediaDevices.getUserMedia({ 
-                    video: { 
-                        facingMode: "environment", // Cere camera din spate
-                        width: { ideal: 1280 },
-                        height: { ideal: 720 }
-                    } 
-                })
-                .then(function(stream) {
-                    console.log("Permisiune acordata cu succes!");
-                    
-                    // Oprim stream-ul temporar deschis manual, pentru a lasa AR.js sa re-instantieze corect camera
-                    stream.getTracks().forEach(track => track.stop());
-                    
-                    // Ascundem ecranul de incarcare
-                    loadingScreen.style.display = 'none';
-                    
-                    // Fortam un resize la scena pentru a ne asigura ca se randeaza pe tot ecranul telefonului
-                    window.dispatchEvent(new Event('resize'));
-                })
-                .catch(function(err) {
-                    // Tratam cazul in care utilizatorul a blocat manual camera din setari
-                    alert("Nu s-a putut accesa camera.\nCauza: " + err.name + "\n\nAsigura-te ca ai oferit permisiuni browserului tau (Chrome/Safari) din setarile telefonului.");
-                });
-            } else {
-                // Failback daca browserul este foarte vechi sau deschis in interiorul aplicatiilor gen Facebook
-                alert("Browserul tau nu suporta WebRTC (Cameră Web). Te rugam sa deschizi link-ul direct in Google Chrome (Android) sau Safari (iOS).");
-                loadingScreen.style.display = 'none';
-            }
-        }
+        // Logica simplificata: ascundem ecranul doar la interactiunea fizica a utilizatorului
+        startButton.addEventListener('click', function() {
+            welcomeScreen.style.display = 'none';
+            
+            // Fortam browserul mobil sa recalculeze dimensiunea containerului video
+            setTimeout(function() {
+                window.dispatchEvent(new Event('resize'));
+            }, 500);
+        });
 
-        // Detectia markerului fizic HIRO
+        // Evenimente detectie marker
         marker.addEventListener('markerFound', () => {
-            uiOverlay.style.display = 'flex'; // Afiseaza butoanele 2D cu link-uri
+            uiOverlay.style.display = 'flex';
         });
 
         marker.addEventListener('markerLost', () => {
-            uiOverlay.style.display = 'none'; // Ascunde butoanele cand markerul nu se mai vede
+            uiOverlay.style.display = 'none';
         });
     </script>
 </body>
